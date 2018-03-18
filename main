@@ -1,0 +1,133 @@
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+
+double f(double);
+double fp(double);
+double bisection(double, double);
+double falsia(double, double);
+double newton(double);
+double sieczne(double, double);
+
+double lagrange(double, double*, double*, int);
+
+int main() {
+	double x[] = { 1, 4, 9 };
+	double fx[] = { 1, 2, 3 };
+
+	cout << lagrange(7, x, fx, 3) << endl;
+
+	system("pause");
+	return 0;
+}
+
+double f(double x) {
+	return 2 * pow(x, 2) + 3 * x - 4;
+}
+
+double fp(double x) {
+	return 4 * x + 3;
+}
+
+double bisection(double a, double b) {
+	double x1, epsilon = 0.1, residuum = 0.1;
+
+	while (abs(a - b) > epsilon) {
+		x1 = (a + b) / 2;
+
+		if (f(x1) <= residuum)
+			break;
+		else if (f(x1) * f(a) < 0)
+			b = x1;
+		else
+			a = x1;
+	}
+
+	return (a + b) / 2;
+}
+
+double falsia(double a, double b) {
+	double epsilon = 0.1, residuum = 0.1, fa = f(a), fb = f(b), x1 = a, x0 = b, f0;
+
+	/*if (fa * fb > 0) {
+		cout << "error" << endl;
+		return 0;
+	}*/
+
+	while (abs(x1 - x0) > epsilon) {
+		x1 = x0;
+		x0 = a - fa * (b - a) / (fb - fa);
+		f0 = f(x0);
+		if (abs(f0) < residuum) 
+			break;
+		else if (fa * f0 < 0) {
+			b = x0;
+			fb = f0;
+		}
+		else {
+			a = x0;
+			fa = f0;
+		}
+	}
+
+	return x0;
+}
+
+double newton(double x0) {
+	double epsilon = 0.1, residuum = 0.1, x1 = x0 - 1, f0 = f(x0), f1;
+	int i = 64;
+
+	while (/*i &&*/ abs(x1 - x0) > epsilon && abs(f0) > residuum) {
+		f1 = fp(x0);
+		/*if (abs(f1) < residuum) {
+			cout << "error" << endl;
+			return 0;
+		}*/
+
+		x1 = x0;
+		x0 = x0 - f0 / f1;
+		f0 = f(x0);
+	}
+
+	return x0;
+}
+
+double sieczne(double x1, double x2) {
+	double epsilon = 0.1, residuum = 0.1, f1 = f(x1), f2 = f(x2), x0, f0;
+
+	while (abs(x1 - x2) > epsilon) {
+		x0 = x1 - f1 * (x1 - x2) / (f1 - f2);
+		f0 = f(x0);
+		if (abs(f0) < residuum) break;
+		x2 = x1;
+		f2 = f1;
+		x1 = x0;
+		f1 = f0;
+	}
+
+	return x0;
+}
+
+
+double lagrange(double X, double* x, double* fx, int n)
+{
+	double ret = 0;
+
+	for (int i = 0; i < n; i++)
+	{
+		double factor = 1;
+
+		for (int j = 0; j < n; j++)
+		{
+			if (j != i)
+			{
+				factor *= (X - x[j]) / (x[i] - x[j]);
+			}
+		}
+
+		ret += fx[i] * factor;
+	}
+
+	return ret;
+}
