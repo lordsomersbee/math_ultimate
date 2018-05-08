@@ -29,6 +29,20 @@ double trapezMethod(int, double, double);
 double trapezFormula(double*, double*, int);
 double simpsonFormula(double*, double*, int);
 
+double f(double x)
+{
+	return 2 * x*x*x*x;
+}
+
+double f2(double x, double y)
+{
+	return x*x + 3 * x*y;
+}
+
+double newtonCotesTrapez(double, double, double);
+double monteCarlo(int, double, double, double, double);
+
+
 
 int main() {
 	double x[] = { -5, -4, -3, -2, -1, 0, 1, 2, 3, 5 };
@@ -391,4 +405,35 @@ double simpsonFormula(double* x, double* fx, int n)
 	}
 
 	return ((area * h) / 3) + ((area2 * h * 3) / 8);
+}
+
+double newtonCotesTrapez(double a, double b, double n)
+{
+	double step = (b - a) / n;
+	double integral = 0.0;
+
+	for (double i = a; i <= b - step; i += step)
+	{
+		integral += (step / 2.0)*(f(i) + f(i + step));
+	}
+
+	return integral;
+}
+
+double monteCarlo(int n, double xp, double xk, double yp, double yk)
+{
+	double factor = 0;
+	double dx = xk - xp;
+	double dy = yk - yp;
+
+	srand(time(NULL));
+
+	for (int i = 0; i < n; i++)
+	{
+		double x = xp + (rand() / double(RAND_MAX) * (dx));
+		double y = yp + (rand() / double(RAND_MAX) * (dy));
+		factor += f2(x, y);
+	}
+
+	return factor * dx * dy / n;
 }
