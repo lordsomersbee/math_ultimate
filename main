@@ -18,12 +18,34 @@ double hermite(double, double*, double*, double*, int);
 
 void mediumWideApprox(double*, double*, int, int);
 
+double monteCarlo(int, double, double);
+double trapezMethod(int, double, double);
+
+double trapezFormula(double*, double*, int);
+double simpsonFormula(double*, double*, int);
+
+
 int main() {
 	double x[] = { -5, -4, -3, -2, -1, 0, 1, 2, 3, 5 };
 	double fx[] = { -110, -60, -20, -10, -1.5, 2, 7, 18, 50, 170 };
 	double df[5] = { 0,0,0,0,0 };
 
-	mediumWideApprox(x, fx, 10, 3);
+	srand(time(NULL));
+
+	/*for (int i = 10; i < 10001; i *= 10)
+	{
+		cout << 330.6 - monteCarlo(i, 2, 10) << endl;
+	}
+	cout << endl;
+	for (int i = 10; i < 10001; i *= 10)
+	{
+		cout << 330.6 - trapezMethod(i, 2, 10) << endl;
+	}*/
+
+	cout << monteCarlo(10000, 2, 10) << endl;
+
+	cout << trapezFormula(x, fx, 9) << endl;
+	cout << simpsonFormula(x, fx, 9) << endl;
 
 	system("pause");
 	return 0;
@@ -280,4 +302,88 @@ void mediumWideApprox(double* x, double* fx, int n, int step)
 		}
 		cout << "=" << result << endl;
 	}
+}
+
+double monteCarlo(int n, double xp, double xk)
+{
+	double factor = 0;
+	double dx = xk - xp;
+	srand(time(NULL));
+
+	for (int i = 0; i < n; i++)
+	{
+		double x = xp + (rand()/double(RAND_MAX) * (dx));
+		factor += fx(x);
+	}
+
+	/*int i = 0;
+	while (i < n)
+	{
+		double x = (rand() % 15);
+
+		if (x <= 10 && x >= 2)
+		{
+			factor += fx(x) / n;
+			i++;
+		}
+	}*/
+
+	return factor * dx / n;
+}
+
+double trapezMethod(int n, double xp, double xk)
+{
+	double s = 0;
+	double dx = (xk - xp) / n;
+
+	for (int i = 1; i < n; i++)
+	{
+		//s += (fx(i) + fx(i + dx)) / 2 * dx;
+		s += fx(xp + i * dx);
+	}
+	s = (s + (fx(xp) + fx(xk)) / 2)*dx;
+
+	return s;
+}
+
+double trapezFormula(double* x, double* fx, int n)
+{
+	double h = (x[n - 1] - x[0]) / (n - 1);
+	double area = 0.0;
+	area += fx[0] + fx[n - 1];
+	
+	for (int i = 1; i < n - 1; i++) 
+	{
+		area += 2 * fx[i];
+	}
+
+	return ((area * h) / 2.0);
+}
+
+double simpsonFormula(double* x, double* fx, int n)
+{
+	if (n <= 2) return 0;
+
+	double h = (x[n - 1] - x[0]) / (n - 1);
+	double area = 0.0;
+	double area2 = 0.0;
+
+	if (n % 2 == 0) 
+	{	
+		area2 += fx[n - 4] + 3 * fx[n - 3] + 3 * fx[n - 2] + fx[n - 1];
+		n -= 3;
+	}
+
+	area += fx[0] + fx[n - 1];
+	for (int i = 1; i < n - 1; i += 2) 
+	{
+		area += 4 * fx[i];
+	}
+
+	for (int i = 2; i < n - 2; i += 2) 
+	{
+		area += 2 * fx[i];
+	}
+
+	return ((area * h) / 3) + ((area2 * h * 3) / 8);
 }
