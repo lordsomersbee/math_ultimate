@@ -18,6 +18,11 @@ double hermite(double, double*, double*, double*, int);
 
 void mediumWideApprox(double*, double*, int, int);
 
+double fx(double x)
+{
+	return x * x;
+}
+
 double monteCarlo(int, double, double);
 double trapezMethod(int, double, double);
 
