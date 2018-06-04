@@ -42,29 +42,154 @@ double f2(double x, double y)
 double newtonCotesTrapez(double, double, double);
 double monteCarlo(int, double, double, double, double);
 
+double f(double x, double y)
+{
+	return (2 * y) - (3 * x);
+	//return (y - (x*x) + 1);
+	//return x + y;
+	//return (2 * x) - y;
+	//return x / y;
+}
+
+void forward(double x0, double y0, double delta_x, int n);
+double forward(double x, double y, double delta_x);
+void rungeKutty(double x0, double y0, double delta_x, int n);
+void improvedEuler(double x0, double y0, double delta_x, int n);
+void directIteration(double x0, double y0, double delta_x, int n);
+
+void jacob(double** A, double* b, int n, int iter)
+{
+	double* x1 = new double[n];
+	double* x2 = new double[n];
+	double* N = new double[n];
+	double** M = new double*[n];
+	for (int i = 0; i < n; i++)
+	{
+		M[i] = new double[n];
+	}
+
+	for (int i = 0; i < n; i++)
+	{
+		N[i] = 1 / A[i][i];
+	}
+
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			if (i == j)
+				M[i][j] = 0;
+			else
+				M[i][j] = -(A[i][j] * N[i]);
+		}
+	}
+
+	for (int i = 0; i < n; i++)
+		x1[i] = 0;
+
+	for (int k = 0; k < iter; k++) 
+	{
+		for (int i = 0; i < n; i++) 
+		{
+			x2[i] = N[i] * b[i];
+
+			for (int j = 0; j < n; j++)
+			{
+				x2[i] += M[i][j] * x1[j];
+			}
+		}
+		for (int i = 0; i < n; i++)
+		{
+			x1[i] = x2[i];
+		}
+	}
+
+	for (int i = 0; i < n; i++)
+	{
+		cout << "x" << i + 1 << "=" << x1[i] << endl;
+	}
+}
+
+
 
 
 int main() {
-	double x[] = { -5, -4, -3, -2, -1, 0, 1, 2, 3, 5 };
-	double fx[] = { -110, -60, -20, -10, -1.5, 2, 7, 18, 50, 170 };
-	double df[5] = { 0,0,0,0,0 };
+	const int n = 4;
 
-	srand(time(NULL));
+	double a[] = { 4, -1, -0.2, 2, -1, 5, 0, -2, 0, -2, -1, 4, 0, -2, -1, 4 };
 
-	/*for (int i = 10; i < 10001; i *= 10)
+	double** A = new double*[n];
+	for (int i = 0; i < n; i++)
 	{
-		cout << 330.6 - monteCarlo(i, 2, 10) << endl;
+		A[i] = new double[n];
 	}
-	cout << endl;
-	for (int i = 10; i < 10001; i *= 10)
-	{
-		cout << 330.6 - trapezMethod(i, 2, 10) << endl;
-	}*/
 
-	cout << monteCarlo(10000, 2, 10) << endl;
+	A[0][0] = 4; A[0][1] = -1; A[0][2] = -0.2; A[0][3] = 2;
+	A[1][0] = -1; A[1][1] = 5; A[1][2] = 0; A[1][3] = -2;
+	A[2][0] = 0.2; A[2][1] = 1; A[2][2] = 10; A[2][3] = -1;
+	A[3][0] = 0; A[3][1] = -2; A[3][2] = -1; A[3][3] = 4;
 
-	cout << trapezFormula(x, fx, 9) << endl;
-	cout << simpsonFormula(x, fx, 9) << endl;
+	/*double A[n][n] = {
+		{ 4, -1, -0.2, 2 } ,
+		{ -1, 5, 0, -2 } ,
+		{ 0, -2, -1, 4 },
+		{0, -2, -1, 4}
+	};*/
+
+	double b[n] = { 30, 0, -10, 5 };
+
+	jacob(A, b, n, 2);
+
+	//double x[] = { -5, -4, -3, -2, -1, 0, 1, 2, 3, 5 };
+	//double fx[] = { -110, -60, -20, -10, -1.5, 2, 7, 18, 50, 170 };
+	//double df[5] = { 0,0,0,0,0 };
+
+	//srand(time(NULL));
+
+	///*for (int i = 10; i < 10001; i *= 10)
+	//{
+	//	cout << 330.6 - monteCarlo(i, 2, 10) << endl;
+	//}
+	//cout << endl;
+	//for (int i = 10; i < 10001; i *= 10)
+	//{
+	//	cout << 330.6 - trapezMethod(i, 2, 10) << endl;
+	//}*/
+
+	///*cout << monteCarlo(10000, 2, 10) << endl;
+
+	//cout << trapezFormula(x, fx, 9) << endl;
+	//cout << simpsonFormula(x, fx, 9) << endl;*/
+
+	//cout << "forward" << endl;
+	//forward(0.0, 1.0, 1.0, 3);
+
+	////______________________________________________
+
+	//cout << "forward" << endl;
+	//double delta_x = 1.0;
+	//double y = 1.0;
+	//for (double x = 0.0; x < 5.0; x += delta_x)
+	//{
+	//	double next_y = forward(x, y, delta_x);
+	//	cout << "x = " << x << "\t y = " << next_y << endl;
+	//	y = next_y;
+	//}
+
+	////______________________________________________
+
+	//cout << "runge" << endl;
+	//rungeKutty(0.0, 0.0, 0.2, 5);
+
+	////______________________________________________
+
+	//cout << "improvEuler" << endl;
+	//improvedEuler(0.0, 1.0, 0.1, 2);
+
+	////______________________________________________
+
+	//cout << "dirIter" << endl;
+	//directIteration(0.0, 1.0, 1.0, 3);
 
 	system("pause");
 	return 0;
@@ -436,4 +561,101 @@ double monteCarlo(int n, double xp, double xk, double yp, double yk)
 	}
 
 	return factor * dx * dy / n;
+}
+
+void forward(double x0, double y0, double delta_x, int n)
+{
+	//n - ilosc powtorzen, delta_x - krok
+	//ogolnie to (xkocowe - xpoczatkowe)/krok = liczba powtrze, jakby zadanie bylo
+	//ze podany jest przedzial a nie n
+
+	double prev_x = x0;
+	double prev_y = y0;
+	double y;
+
+	for (int i = 0; i < n; i++)
+	{
+		y = prev_y + delta_x * (f(prev_x, prev_y));
+
+		cout << "x" << i + 1 << " = " << prev_x + delta_x;
+		cout << "\t y" << i + 1 << " = " << y << endl;
+
+		prev_x += delta_x;
+		prev_y = y;
+
+	}
+
+}
+
+double forward(double x, double y, double delta_x)
+{
+	return y + delta_x * (f(x, y));
+}
+
+void rungeKutty(double x0, double y0, double delta_x, int n)
+{
+	double prev_x = x0;
+	double prev_y = y0;
+	double y;
+
+	for (int i = 0; i < n; i++)
+	{
+		double k1 = delta_x * f(prev_x, prev_y);
+		double k2 = delta_x * f(prev_x + (delta_x / 2.0), prev_y + (k1 / 2.0));
+		double k3 = delta_x * f(prev_x + (delta_x / 2), prev_y + (k2 / 2));
+		double k4 = delta_x * f(prev_x + delta_x, prev_y + k3);
+
+		y = prev_y + (k1 + 2 * k2 + 2 * k3 + k4) / 6.0;
+
+		cout << "x" << i + 1 << " = " << prev_x + delta_x;
+		cout << " y" << i + 1 << " = " << y << endl;
+
+		prev_x += delta_x;
+		prev_y = y;
+	}
+}
+
+void improvedEuler(double x0, double y0, double delta_x, int n)
+{
+	double prev_x = x0;
+	double prev_y = y0;
+	double y;
+
+	for (int i = 0; i < n; i++)
+	{
+		double yf = prev_y + delta_x * f(prev_x, prev_y);
+		double yb = prev_y + delta_x * f(prev_x + delta_x, yf);
+
+		y = (yf + yb) / 2.0;
+
+		cout << "x" << i + 1 << " = " << prev_x + delta_x;
+		cout << " y" << i + 1 << " = " << y << endl;
+
+		prev_x += delta_x;
+		prev_y = y;
+	}
+}
+
+
+void directIteration(double x0, double y0, double delta_x, int n)
+{
+	double prev_x = x0;
+	double prev_y = y0;
+	double y;
+
+	for (int i = 0; i < n; i++)
+	{
+		//predyktor
+		double yp = prev_y + delta_x * f(prev_x + delta_x, prev_y);
+
+		//korektor
+		y = prev_y + delta_x * f(prev_x + delta_x, yp);
+
+		cout << "x" << i + 1 << " = " << prev_x + delta_x;
+		cout << " y" << i + 1 << " = " << y << endl;
+
+		prev_x += delta_x;
+		prev_y = y;
+	}
+
 }
